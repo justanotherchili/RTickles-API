@@ -1,4 +1,6 @@
 const db = require('./db/connection')
+const endpoints = require('./endpoints.json')
+
 
 async function selectAllTopics(){
   try{
@@ -10,4 +12,13 @@ async function selectAllTopics(){
   }
 }
 
-module.exports = {selectAllTopics}
+async function selectEndpoints(){
+  try{
+    return endpoints
+  }
+  catch(err){
+    throw err
+  }
+}
+
+module.exports = {selectAllTopics, selectEndpoints}

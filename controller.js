@@ -1,5 +1,5 @@
 const express = require("express");
-const { selectAllTopics } = require("./model");
+const { selectAllTopics, selectEndpoints } = require("./model");
 
 async function getAllTopics(req, res, next) {
   try {
@@ -10,4 +10,14 @@ async function getAllTopics(req, res, next) {
   }
 }
 
-module.exports = { getAllTopics };
+async function getAllEndpoints(req, res, next){
+  try{
+    const endPoints = await selectEndpoints()
+    res.status(200).send(endPoints)
+  }
+  catch(err){
+    next(err)
+  }
+}
+
+module.exports = { getAllTopics,getAllEndpoints };
