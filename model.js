@@ -24,8 +24,8 @@ async function selectArticleByID(articleID) {
       `SELECT * FROM articles WHERE article_id = $1`,
       [articleID]
     );
-    if (!query.rows[0]) {
-      return Promise.reject({ status: 404, msg: "Article Does Not Exist!" });
+    if (query.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Article Not Found" });
     }
     return query.rows[0];
   } catch (err) {
@@ -47,9 +47,22 @@ async function selectAllArticles() {
   }
 }
 
+async function selectCommentsByArticleID(article_id) {
+  try {
+    const query = await db.query(
+      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
+      [article_id]
+    );
+    return query.rows;
+  } catch (err) {
+    throw err;
+  }
+}
+
 module.exports = {
   selectAllTopics,
   selectEndpoints,
   selectArticleByID,
   selectAllArticles,
+  selectCommentsByArticleID,
 };
