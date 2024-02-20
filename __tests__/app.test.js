@@ -53,8 +53,8 @@ describe("GET /api/", () => {
 
 describe("GET /api/articles/:article_id", () => {
   test("get article by id", async () => {
-    const article = await request(app).get("/api/articles/1").expect(200);
-    expect(article.body).toMatchObject({
+    const res = await request(app).get("/api/articles/1").expect(200);
+    expect(res.body).toMatchObject({
       author: expect.any(String),
       title: expect.any(String),
       article_id: expect.any(Number),
@@ -64,18 +64,39 @@ describe("GET /api/articles/:article_id", () => {
       votes: expect.any(Number),
       article_img_url: expect.any(String),
     });
-    expect(article.body.article_id).toBe(1);
+    expect(res.body.article_id).toBe(1);
   });
   test("Returns 404 not found for a non existent id", async () => {
-    const article = await request(app).get("/api/articles/99999").expect(404);
+    const res = await request(app).get("/api/articles/99999").expect(404);
 
-    const errorMessage = article.body.msg;
+    const errorMessage = res.body.msg;
 
     expect(errorMessage).toBe(`Article Not Found`);
   });
   test("Returns 400 for a bad request", async () => {
-    const article = await request(app).get("/api/articles/bonk").expect(400);
-    const errorMessage = article.body.msg;
+    const res = await request(app).get("/api/articles/bonk").expect(400);
+    const errorMessage = res.body.msg;
     expect(errorMessage).toBe(`Bad Request`);
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("get all articles", async () => {
+    const res = await request(app).get("/api/articles").expect(200);
+    const articles = res.body;
+    expect(articles).toHaveLength(13);
+    articles.forEach((article) => {
+      expect(article).toMatchObject({
+        author: expect.any(String),
+        title: expect.any(String),
+        article_id: expect.any(Number),
+        topic: expect.any(String),
+        created_at: expect.any(String),
+        votes: expect.any(Number),
+        article_img_url: expect.any(String),
+        comment_count: expect.any(Number),
+      });
+      expect(article.body).toBeUndefined();
+    });
   });
 });
