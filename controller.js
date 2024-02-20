@@ -3,12 +3,13 @@ const {
   selectAllTopics,
   selectEndpoints,
   selectArticleByID,
+  selectAllArticles,
 } = require("./model");
 
 async function getAllTopics(req, res, next) {
   try {
     const topics = await selectAllTopics();
-    res.status(200).send(topics.rows);
+    res.status(200).send(topics);
   } catch (err) {
     next(err);
   }
@@ -33,4 +34,18 @@ async function getArticleByID(req, res, next) {
   }
 }
 
-module.exports = { getAllTopics, getAllEndpoints, getArticleByID };
+async function getAllArticles(req, res, next) {
+  try {
+    const articles = await selectAllArticles();
+    res.status(200).send(articles);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  getAllTopics,
+  getAllEndpoints,
+  getArticleByID,
+  getAllArticles,
+};

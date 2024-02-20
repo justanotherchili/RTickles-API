@@ -4,7 +4,7 @@ const endpoints = require("./endpoints.json");
 async function selectAllTopics() {
   try {
     const query = await db.query(`SELECT * FROM topics`);
-    return query;
+    return query.rows;
   } catch (err) {
     throw err;
   }
@@ -33,4 +33,23 @@ async function selectArticleByID(articleID) {
   }
 }
 
-module.exports = { selectAllTopics, selectEndpoints, selectArticleByID };
+async function selectAllArticles() {
+  try {
+    const query = await db.query(
+      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+        (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id)::integer AS comment_count
+      FROM articles
+      ORDER BY created_at desc`
+    );
+    return query.rows;
+  } catch (err) {
+    throw err;
+  }
+}
+
+module.exports = {
+  selectAllTopics,
+  selectEndpoints,
+  selectArticleByID,
+  selectAllArticles,
+};
