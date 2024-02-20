@@ -3,6 +3,8 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const data = require("../db/data/test-data/");
+const articles = require("../db/data/test-data/articles");
+const jestSorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(data);
@@ -69,8 +71,7 @@ describe("GET /api/articles/:article_id", () => {
   test("Returns 404 not found for a non existent id", async () => {
     const res = await request(app).get("/api/articles/99999").expect(404);
 
-    const errorMessage = res.body.msg;
-
+    const errorMessage = res.error.text;
     expect(errorMessage).toBe(`Article Not Found`);
   });
   test("Returns 400 for a bad request", async () => {
@@ -98,5 +99,51 @@ describe("GET /api/articles", () => {
       });
       expect(article.body).toBeUndefined();
     });
+  });
+  test("articles are sorted by date", async () => {
+    const res = await request(app).get("/api/articles").expect(200);
+    const articles = res.body;
+    expect(articles).toBeSortedBy("created_at", { descending: true });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("get all comments for article ID", async () => {
+    const res = await request(app).get("/api/articles/9/comments").expect(200);
+    const comments = res.body;
+    console.log(comments)
+    expect(res.body).toHaveLength(2);
+    comments.forEach((comment) => {
+      expect(comment).toMatchObject({
+        comment_id: expect.any(Number),
+        votes: expect.any(Number),
+        created_at: expect.any(String),
+        author: expect.any(String),
+        body: expect.any(String),
+        article_id: 9,
+      });
+    });
+  });
+  test("return a 404 error when the article id doesnt exist", async () => {
+    const res = await request(app)
+      .get("/api/articles/437509834/comments")
+      .expect(404);
+    const errorMessage = res.error.text;
+    expect(errorMessage).toBe(`Article Not Found`);
+  });
+  test("return a 400 error when the article isnt an id number", async () => {
+    const res = await request(app)
+      .get("/api/articles/oranges/comments")
+      .expect(400);
+    const errorMessage = res.body.msg;
+    expect(errorMessage).toBe(`Bad Request`);
+  });
+  test("return No comments when the article exists but doesnt have comments", async () => {
+    const res = await request(app).get("/api/articles/2/comments").expect(200);
+    expect(res.body).toHaveLength(0);
+  });
+  test("return most recent comments first", async () => {
+    const res = await request(app).get("/api/articles/1/comments").expect(200);
+    expect(res.body).toBeSortedBy("created_at", { descending: true });
   });
 });

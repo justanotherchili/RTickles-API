@@ -4,6 +4,7 @@ const {
   getAllEndpoints,
   getArticleByID,
   getAllArticles,
+  getCommentsByArticleID,
 } = require("./controller");
 const app = express();
 
@@ -14,6 +15,8 @@ app.get("/api", getAllEndpoints);
 app.get("/api/articles/:article_id", getArticleByID);
 
 app.get("/api/articles", getAllArticles)
+
+app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
 
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Path Not Found" });
@@ -28,7 +31,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  if (err.status === 404) res.status(404).send({ msg: "Article Not Found" });
+  if (err.status === 404) res.status(404).send(err.msg);
 });
 
 app.use((err, req, res, next) => {
