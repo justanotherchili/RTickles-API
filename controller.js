@@ -6,6 +6,7 @@ const {
   selectAllArticles,
   selectCommentsByArticleID,
   insertCommentsByArticleID,
+  updateVotesByArticleID,
 } = require("./model");
 
 async function getAllTopics(req, res, next) {
@@ -66,7 +67,19 @@ async function postCommentsByArticleID(req, res, next) {
       username,
       body
     );
-    res.status(201).send({comment: postComment});
+    res.status(201).send({ comment: postComment });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function patchVotesByArticleID(req, res, next) {
+  try {
+    const article_id = req.params.article_id;
+    const newVote = req.body.inc_votes;
+    const validArticle = await selectArticleByID(article_id);
+    const patchVote = await updateVotesByArticleID(newVote, article_id);
+    res.status(200).send(patchVote);
   } catch (err) {
     next(err);
   }
@@ -79,4 +92,5 @@ module.exports = {
   getAllArticles,
   getCommentsByArticleID,
   postCommentsByArticleID,
+  patchVotesByArticleID,
 };

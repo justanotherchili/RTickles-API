@@ -6,6 +6,7 @@ const {
   getAllArticles,
   getCommentsByArticleID,
   postCommentsByArticleID,
+  patchVotesByArticleID,
 } = require("./controller");
 const app = express();
 app.use(express.json());
@@ -21,6 +22,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
 
 app.post("/api/articles/:article_id/comments", postCommentsByArticleID);
+
+app.patch("/api/articles/:article_id", patchVotesByArticleID)
 
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Path Not Found" });
@@ -39,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  if (err.status === 404) res.status(404).send(err.msg);
+  if (err.status === 404) res.status(404).send({msg:err.msg});
 });
 
 app.use((err, req, res, next) => {

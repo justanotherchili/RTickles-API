@@ -71,7 +71,7 @@ describe("GET /api/articles/:article_id", () => {
   test("Returns 404 not found for a non existent id", async () => {
     const res = await request(app).get("/api/articles/99999").expect(404);
 
-    const errorMessage = res.error.text;
+    const errorMessage = res.body.msg;
     expect(errorMessage).toBe(`Article Not Found`);
   });
   test("Returns 400 for a bad request for wrong type", async () => {
@@ -127,7 +127,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     const res = await request(app)
       .get("/api/articles/437509834/comments")
       .expect(404);
-    const errorMessage = res.error.text;
+    const errorMessage = res.body.msg;
     expect(errorMessage).toBe(`Article Not Found`);
   });
   test("return a 400 error when the article isnt an id number", async () => {
@@ -192,6 +192,38 @@ describe("POST /api/articles/:article_id/comments", () => {
       msg: "Bad Request. Non-Existent ID Value",
     });
   });
-  
-  
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("Increment vote count returning the updated article with 200 status code", async () => {
+    const res = await request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 1 })
+      .expect(200);
+    expect(res.body).toMatchObject({
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      created_at: "2020-07-09T20:11:00.000Z",
+      votes: 101,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    });
+  });
+  test("Bad request if missing body", async () => {
+    const res = await request(app)
+      .patch("/api/articles/1")
+      .send({ zamba: 2 })
+      .expect(400);
+    expect(res.body.msg).toBe("Bad Request. Missing Required Field Values");
+  });
+  test("404 not found if article is not found", async () => {
+    const res = await request(app)
+      .patch("/api/articles/234234")
+      .send({ inv_votes: 2 })
+      .expect(404);
+    expect(res.body.msg).toBe("Article Not Found");
+  });
 });

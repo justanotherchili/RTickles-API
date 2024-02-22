@@ -36,7 +36,8 @@ async function selectArticleByID(articleID) {
 async function selectAllArticles() {
   try {
     const query = await db.query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+      `
+      SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
         (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id)::integer AS comment_count
       FROM articles
       ORDER BY created_at desc`
@@ -50,7 +51,10 @@ async function selectAllArticles() {
 async function selectCommentsByArticleID(article_id) {
   try {
     const query = await db.query(
-      `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
+      `
+      SELECT * FROM comments 
+      WHERE article_id = $1 
+      ORDER BY created_at DESC`,
       [article_id]
     );
     return query.rows;
@@ -59,15 +63,34 @@ async function selectCommentsByArticleID(article_id) {
   }
 }
 
-async function insertCommentsByArticleID(article_id, author, body){
-  try{
+async function insertCommentsByArticleID(article_id, author, body) {
+  try {
     const query = await db.query(
-      `INSERT INTO comments(body, author, article_id) VALUES ($1, $2, $3) RETURNING *`,[body, author,article_id]
-    )
-    return query.rows[0].body
+      `
+      INSERT INTO comments(body, author, article_id) 
+      VALUES ($1, $2, $3) 
+      RETURNING *`,
+      [body, author, article_id]
+    );
+    return query.rows[0].body;
+  } catch (err) {
+    throw err;
   }
-  catch(err){
-    throw err
+}
+
+async function updateVotesByArticleID(newVote, article_id) {
+  try {
+    const query = await db.query(
+      `
+      UPDATE articles
+      SET votes = votes + $1 
+      WHERE article_id = $2
+      RETURNING *`,
+      [newVote, article_id]
+    );
+    return query.rows[0];
+  } catch (err) {
+    throw err;
   }
 }
 
@@ -77,5 +100,6 @@ module.exports = {
   selectArticleByID,
   selectAllArticles,
   selectCommentsByArticleID,
-  insertCommentsByArticleID
+  insertCommentsByArticleID,
+  updateVotesByArticleID,
 };
