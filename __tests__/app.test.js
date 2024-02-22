@@ -59,14 +59,13 @@ describe("GET /api/articles/:article_id", () => {
     expect(res.body).toMatchObject({
       author: expect.any(String),
       title: expect.any(String),
-      article_id: expect.any(Number),
+      article_id: 1,
       body: expect.any(String),
       topic: expect.any(String),
       created_at: expect.any(String),
       votes: expect.any(Number),
       article_img_url: expect.any(String),
     });
-    expect(res.body.article_id).toBe(1);
   });
   test("Returns 404 not found for a non existent id", async () => {
     const res = await request(app).get("/api/articles/99999").expect(404);
@@ -153,7 +152,16 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/2/comments")
       .send({ username: "rogersop", body: "help me" })
       .expect(201);
-    expect(res.body).toMatchObject({ comment: "help me" });
+    expect(res.body).toMatchObject({
+      comment: {
+        comment_id: 19,
+        body: "help me",
+        article_id: 2,
+        author: "rogersop",
+        votes: 0,
+        created_at: expect.any(String),
+      },
+    });
   });
   test("Posting to a non-existent article_id returns 400 Bad Request", async () => {
     const res = await request(app)
@@ -225,5 +233,26 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inv_votes: 2 })
       .expect(404);
     expect(res.body.msg).toBe("Article Not Found");
+  });
+  test("400 if article is an invalid ID type", async () => {
+    const res = await request(app)
+      .patch("/api/articles/bonkey")
+      .send({ inv_votes: 2 })
+      .expect(400);
+    expect(res.body.msg).toBe("Bad Request. Invalid Input Type");
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("Deletes given comment by comment_id returning a 204 status with no content", async () => {
+    const res = await request(app).delete("/api/comments/1").expect(204);
+  });
+  test("404 not found if comment is not found", async () => {
+    const res = await request(app).delete("/api/comments/234234").expect(404);
+    expect(res.body.msg).toBe("Comment Not Found");
+  });
+  test("400 Bad requestif comment id is invalid type", async () => {
+    const res = await request(app).delete("/api/comments/bonk").expect(400);
+    expect(res.body.msg).toBe("Bad Request. Invalid Input Type");
   });
 });

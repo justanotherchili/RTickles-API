@@ -72,7 +72,7 @@ async function insertCommentsByArticleID(article_id, author, body) {
       RETURNING *`,
       [body, author, article_id]
     );
-    return query.rows[0].body;
+    return query.rows[0];
   } catch (err) {
     throw err;
   }
@@ -94,6 +94,23 @@ async function updateVotesByArticleID(newVote, article_id) {
   }
 }
 
+async function deleteCommentsByID(commentID){
+  try{
+    const query = await db.query(`
+    DELETE from comments
+    WHERE comment_id = $1
+    RETURNING *
+    `, [commentID])
+    if(query.rowCount === 0){
+      return Promise.reject({status: 404, msg:"Comment Not Found"})
+    }
+    return query
+  }
+  catch(err){
+    throw err
+  }
+}
+
 module.exports = {
   selectAllTopics,
   selectEndpoints,
@@ -102,4 +119,5 @@ module.exports = {
   selectCommentsByArticleID,
   insertCommentsByArticleID,
   updateVotesByArticleID,
+  deleteCommentsByID
 };
