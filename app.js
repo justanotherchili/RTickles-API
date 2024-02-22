@@ -5,8 +5,10 @@ const {
   getArticleByID,
   getAllArticles,
   getCommentsByArticleID,
+  postCommentsByArticleID,
 } = require("./controller");
 const app = express();
+app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
 
@@ -14,9 +16,11 @@ app.get("/api", getAllEndpoints);
 
 app.get("/api/articles/:article_id", getArticleByID);
 
-app.get("/api/articles", getAllArticles)
+app.get("/api/articles", getAllArticles);
 
-app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
+app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
+
+app.post("/api/articles/:article_id/comments", postCommentsByArticleID);
 
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Path Not Found" });
@@ -24,9 +28,13 @@ app.all("/*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  const errorCodes = ["22P02"];
-  if (errorCodes.includes(err.code))
-    res.status(400).send({ msg: "Bad Request" });
+  const errorMsg = {
+    "22P02": "Invalid Input Type",
+    "23503": "Non-Existent ID Value",
+    "23502": "Missing Required Field Values",
+  };
+  if (errorMsg[err.code] !== undefined)
+    res.status(400).send({ msg: `Bad Request. ${errorMsg[err.code]}` });
   next(err);
 });
 
