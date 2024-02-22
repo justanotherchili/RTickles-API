@@ -153,7 +153,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/2/comments")
       .send({ username: "rogersop", body: "help me" })
       .expect(201);
-      console.log(res.body)
     expect(res.body).toMatchObject({ comment: "help me" });
   });
   test("Posting to a non-existent article_id returns 400 Bad Request", async () => {
