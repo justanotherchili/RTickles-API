@@ -5,6 +5,7 @@ const {
   selectArticleByID,
   selectAllArticles,
   selectCommentsByArticleID,
+  insertCommentsByArticleID,
 } = require("./model");
 
 async function getAllTopics(req, res, next) {
@@ -47,7 +48,7 @@ async function getAllArticles(req, res, next) {
 async function getCommentsByArticleID(req, res, next) {
   try {
     const article_id = req.params.article_id;
-    const article = await selectArticleByID(article_id)
+    const article = await selectArticleByID(article_id);
     const comments = await selectCommentsByArticleID(article_id);
 
     res.status(200).send(comments);
@@ -55,10 +56,27 @@ async function getCommentsByArticleID(req, res, next) {
     next(err);
   }
 }
+
+async function postCommentsByArticleID(req, res, next) {
+  try {
+    const article_id = req.params.article_id;
+    const { username, body } = req.body;
+    const postComment = await insertCommentsByArticleID(
+      article_id,
+      username,
+      body
+    );
+    res.status(201).send({comment: postComment});
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllTopics,
   getAllEndpoints,
   getArticleByID,
   getAllArticles,
   getCommentsByArticleID,
+  postCommentsByArticleID,
 };

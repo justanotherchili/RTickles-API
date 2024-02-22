@@ -74,10 +74,10 @@ describe("GET /api/articles/:article_id", () => {
     const errorMessage = res.error.text;
     expect(errorMessage).toBe(`Article Not Found`);
   });
-  test("Returns 400 for a bad request", async () => {
+  test("Returns 400 for a bad request for wrong type", async () => {
     const res = await request(app).get("/api/articles/bonk").expect(400);
     const errorMessage = res.body.msg;
-    expect(errorMessage).toBe(`Bad Request`);
+    expect(errorMessage).toBe(`Bad Request. Invalid Input Type`);
   });
 });
 
@@ -111,7 +111,6 @@ describe("GET /api/articles/:article_id/comments", () => {
   test("get all comments for article ID", async () => {
     const res = await request(app).get("/api/articles/9/comments").expect(200);
     const comments = res.body;
-    console.log(comments)
     expect(res.body).toHaveLength(2);
     comments.forEach((comment) => {
       expect(comment).toMatchObject({
@@ -136,7 +135,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/oranges/comments")
       .expect(400);
     const errorMessage = res.body.msg;
-    expect(errorMessage).toBe(`Bad Request`);
+    expect(errorMessage).toBe(`Bad Request. Invalid Input Type`);
   });
   test("return No comments when the article exists but doesnt have comments", async () => {
     const res = await request(app).get("/api/articles/2/comments").expect(200);
@@ -146,4 +145,53 @@ describe("GET /api/articles/:article_id/comments", () => {
     const res = await request(app).get("/api/articles/1/comments").expect(200);
     expect(res.body).toBeSortedBy("created_at", { descending: true });
   });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Allows existing user to post comment with a 201 and the comment returned", async () => {
+    const res = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "rogersop", body: "help me" })
+      .expect(201);
+    expect(res.body).toMatchObject({ comment: "help me" });
+  });
+  test("Posting to a non-existent article_id returns 400 Bad Request", async () => {
+    const res = await request(app)
+      .post("/api/articles/999999/comments")
+      .send({ username: "rogersop", body: "help me" })
+      .expect(400);
+    expect(res.body).toMatchObject({
+      msg: "Bad Request. Non-Existent ID Value",
+    });
+  });
+  test("Posting to an invalid type for article ID returns 400 Bad Request", async () => {
+    const res = await request(app)
+      .post("/api/articles/bonk/comments")
+      .send({ username: "rogersop", body: "help me" })
+      .expect(400);
+    expect(res.body).toMatchObject({
+      msg: "Bad Request. Invalid Input Type",
+    });
+  });
+  test("Should return a 400 bad request is missing fields", async () => {
+    const res = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "rogersop" })
+      .expect(400);
+    expect(res.body).toMatchObject({
+      msg: "Bad Request. Missing Required Field Values",
+    });
+  });
+
+  test("Should return a 400 bad request if user does not exist", async () => {
+    const res = await request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "darkfester", body: "I dont exist" })
+      .expect(400);
+    expect(res.body).toMatchObject({
+      msg: "Bad Request. Non-Existent ID Value",
+    });
+  });
+  
+  
 });

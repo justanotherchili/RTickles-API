@@ -59,10 +59,23 @@ async function selectCommentsByArticleID(article_id) {
   }
 }
 
+async function insertCommentsByArticleID(article_id, author, body){
+  try{
+    const query = await db.query(
+      `INSERT INTO comments(body, author, article_id) VALUES ($1, $2, $3) RETURNING *`,[body, author,article_id]
+    )
+    return query.rows[0].body
+  }
+  catch(err){
+    throw err
+  }
+}
+
 module.exports = {
   selectAllTopics,
   selectEndpoints,
   selectArticleByID,
   selectAllArticles,
   selectCommentsByArticleID,
+  insertCommentsByArticleID
 };
