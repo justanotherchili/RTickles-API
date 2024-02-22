@@ -7,6 +7,7 @@ const {
   selectCommentsByArticleID,
   insertCommentsByArticleID,
   updateVotesByArticleID,
+  deleteCommentsByID,
 } = require("./model");
 
 async function getAllTopics(req, res, next) {
@@ -85,6 +86,16 @@ async function patchVotesByArticleID(req, res, next) {
   }
 }
 
+async function removeCommentByID(req, res, next) {
+  try {
+    const commentID = req.params.comment_id;
+    const deleteComment = await deleteCommentsByID(commentID);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getAllTopics,
   getAllEndpoints,
@@ -93,4 +104,5 @@ module.exports = {
   getCommentsByArticleID,
   postCommentsByArticleID,
   patchVotesByArticleID,
+  removeCommentByID,
 };
