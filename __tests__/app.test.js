@@ -5,6 +5,7 @@ const request = require("supertest");
 const data = require("../db/data/test-data/");
 const articles = require("../db/data/test-data/articles");
 const jestSorted = require("jest-sorted");
+const endpointsJson = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -17,8 +18,8 @@ afterAll(() => {
 describe("Path not found 404", () => {
   test("returns 404 for path that doesnt exist", async () => {
     const res = await request(app).get("/api/uhertiguer").expect(404);
-    const error = res.body;
-    expect(error.msg).toBe("Path Not Found");
+    const error = res.body.msg;
+    expect(error).toBe("Path Not Found");
   });
 });
 
@@ -28,7 +29,7 @@ describe("GET /api/topics", () => {
   });
   test("GET all topics with slug and description properties", async () => {
     const res = await request(app).get("/api/topics").expect(200);
-    const topics = res.body;
+    const topics = res.body.topics;
     expect(topics.length).toBe(3);
     topics.forEach((topic) => {
       expect(topic).toMatchObject({
@@ -42,7 +43,7 @@ describe("GET /api/topics", () => {
 describe("GET /api/", () => {
   test("get all APIs with the decription, queries and example", async () => {
     const res = await request(app).get("/api").expect(200);
-    const endpoints = res.body;
+    const endpoints = res.body.endPoints;
     for (const key in endpoints) {
       expect(endpoints[key]).toMatchObject({
         description: expect.any(String),
@@ -51,12 +52,17 @@ describe("GET /api/", () => {
       });
     }
   });
+  test("matches with the endpoints.json file", async () => {
+    const res = await request(app).get("/api").expect(200);
+    const endpointsRes = res.body.endPoints;
+    expect(endpointsRes).toEqual(endpointsJson);
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
   test("get article by id", async () => {
     const res = await request(app).get("/api/articles/1").expect(200);
-    const article = res.body.article
+    const article = res.body.article;
     expect(article).toMatchObject({
       author: expect.any(String),
       title: expect.any(String),
@@ -66,9 +72,8 @@ describe("GET /api/articles/:article_id", () => {
       created_at: expect.any(String),
       votes: expect.any(Number),
       article_img_url: expect.any(String),
-      comment_count: expect.any(Number)
+      comment_count: expect.any(Number),
     });
-
   });
   test("Returns 404 not found for a non existent id", async () => {
     const res = await request(app).get("/api/articles/99999").expect(404);
@@ -108,8 +113,8 @@ describe("GET /api/articles", () => {
     expect(articles).toBeSortedBy("created_at", { descending: true });
   });
   test("get articles filtered by topic", async () => {
-    const res = await request(app).get("/api/articles?topic=cats").expect(200)
-    const filteredArticles = res.body.articles
+    const res = await request(app).get("/api/articles?topic=cats").expect(200);
+    const filteredArticles = res.body.articles;
     expect(filteredArticles).toHaveLength(1);
     filteredArticles.forEach((article) => {
       expect(article).toMatchObject({
@@ -122,20 +127,25 @@ describe("GET /api/articles", () => {
         article_img_url: expect.any(String),
         comment_count: expect.any(Number),
       });
-    })
-  })
+    });
+  });
+  test("topic exists but no articles returns nothing", async () => {
+    const res = await request(app).get("/api/articles?topic=paper").expect(200);
+    const filteredArticles = res.body.articles;
+    expect(filteredArticles).toHaveLength(0);
+  });
   test("404 not found if the topic does not exist", async () => {
-    const res = await request(app).get("/api/articles?topic=bonk").expect(404)
-    const errorMessage = res.body.msg
-    expect(errorMessage).toBe("Topic Not Found")
-  })
+    const res = await request(app).get("/api/articles?topic=bonk").expect(404);
+    const errorMessage = res.body.msg;
+    expect(errorMessage).toBe("Topic Not Found");
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
   test("get all comments for article ID", async () => {
     const res = await request(app).get("/api/articles/9/comments").expect(200);
-    const comments = res.body;
-    expect(res.body).toHaveLength(2);
+    const comments = res.body.comments;
+    expect(comments).toHaveLength(2);
     comments.forEach((comment) => {
       expect(comment).toMatchObject({
         comment_id: expect.any(Number),
@@ -161,13 +171,15 @@ describe("GET /api/articles/:article_id/comments", () => {
     const errorMessage = res.body.msg;
     expect(errorMessage).toBe(`Bad Request. Invalid Input Type`);
   });
-  test("return No comments when the article exists but doesnt have comments", async () => {
+  test("return no comments when the article exists but doesnt have comments", async () => {
     const res = await request(app).get("/api/articles/2/comments").expect(200);
-    expect(res.body).toHaveLength(0);
+    const comments = res.body.comments;
+    expect(comments).toHaveLength(0);
   });
   test("return most recent comments first", async () => {
     const res = await request(app).get("/api/articles/1/comments").expect(200);
-    expect(res.body).toBeSortedBy("created_at", { descending: true });
+    const comments = res.body.comments;
+    expect(comments).toBeSortedBy("created_at", { descending: true });
   });
 });
 
@@ -286,6 +298,7 @@ describe("GET /api/users", () => {
   test("Returns an array of user objects with properties username, name and avatar url", async () => {
     const res = await request(app).get("/api/users").expect(200);
     const users = res.body.users;
+    expect(users).toHaveLength(4);
     users.forEach((user) => {
       expect(user).toMatchObject({
         username: expect.any(String),
@@ -294,6 +307,4 @@ describe("GET /api/users", () => {
       });
     });
   });
-
-
 });
