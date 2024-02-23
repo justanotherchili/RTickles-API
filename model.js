@@ -111,6 +111,19 @@ async function deleteCommentsByID(commentID){
   }
 }
 
+async function selectAllUsers(){
+  try{
+    const query = await db.query(`
+    SELECT * FROM users
+    `)
+    return query.rows
+  }
+  catch(err){
+    console.log(err)
+    throw err
+  }
+}
+
 module.exports = {
   selectAllTopics,
   selectEndpoints,
@@ -119,5 +132,6 @@ module.exports = {
   selectCommentsByArticleID,
   insertCommentsByArticleID,
   updateVotesByArticleID,
-  deleteCommentsByID
+  deleteCommentsByID,
+  selectAllUsers
 };

@@ -256,3 +256,19 @@ describe("DELETE /api/comments/:comment_id", () => {
     expect(res.body.msg).toBe("Bad Request. Invalid Input Type");
   });
 });
+
+describe("GET /api/users", () => {
+  test("Returns an array of user objects with properties username, name and avatar url", async () => {
+    const res = await request(app).get("/api/users").expect(200);
+    const users = res.body.users;
+    users.forEach((user) => {
+      expect(user).toMatchObject({
+        username: expect.any(String),
+        name: expect.any(String),
+        avatar_url: expect.any(String),
+      });
+    });
+  });
+
+
+});
