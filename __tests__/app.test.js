@@ -129,7 +129,7 @@ describe("GET /api/articles", () => {
       });
     });
   });
-  test.only("topic exists but no articles returns nothing", async () => {
+  test("topic exists but no articles returns nothing", async () => {
     const res = await request(app).get("/api/articles?topic=paper").expect(200);
     const filteredArticles = res.body.articles;
     expect(filteredArticles).toHaveLength(0);
