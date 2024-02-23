@@ -8,6 +8,7 @@ const {
   insertCommentsByArticleID,
   updateVotesByArticleID,
   deleteCommentsByID,
+  selectAllUsers,
 } = require("./model");
 
 async function getAllTopics(req, res, next) {
@@ -96,6 +97,17 @@ async function removeCommentByID(req, res, next) {
   }
 }
 
+async function getAllUsers(req, res, next){
+  try{
+    const allUsers = await selectAllUsers()
+    res.status(200).send({users: allUsers})
+  }
+  catch(err){
+    next(err)
+  }
+}
+
+
 module.exports = {
   getAllTopics,
   getAllEndpoints,
@@ -105,4 +117,5 @@ module.exports = {
   postCommentsByArticleID,
   patchVotesByArticleID,
   removeCommentByID,
+  getAllUsers
 };
