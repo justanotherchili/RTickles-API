@@ -41,8 +41,9 @@ async function getArticleByID(req, res, next) {
 
 async function getAllArticles(req, res, next) {
   try {
-    const articles = await selectAllArticles();
-    res.status(200).send(articles);
+    const topic = req.query.topic
+    const articles = await selectAllArticles(topic);
+    res.status(200).send({articles});
   } catch (err) {
     next(err);
   }
