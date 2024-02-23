@@ -33,15 +33,22 @@ async function selectArticleByID(articleID) {
   }
 }
 
-async function selectAllArticles() {
+async function selectAllArticles(topic) {
   try {
-    const query = await db.query(
-      `
-      SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
-        (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id)::integer AS comment_count
-      FROM articles
-      ORDER BY created_at desc`
-    );
+    const queries = [];
+    let sqlString = `
+    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+      (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id)::integer AS comment_count
+    FROM articles`;
+    if (topic) {
+      sqlString += " WHERE topic = $1";
+      queries.push(topic);
+    }
+    sqlString += ` ORDER BY created_at desc`;
+    const query = await db.query(sqlString, queries);
+    if(query.rowCount === 0){
+      return Promise.reject({status: 404, msg: 'Topic Not Found'})
+    }
     return query.rows;
   } catch (err) {
     throw err;
@@ -94,33 +101,34 @@ async function updateVotesByArticleID(newVote, article_id) {
   }
 }
 
-async function deleteCommentsByID(commentID){
-  try{
-    const query = await db.query(`
+async function deleteCommentsByID(commentID) {
+  try {
+    const query = await db.query(
+      `
     DELETE from comments
     WHERE comment_id = $1
     RETURNING *
-    `, [commentID])
-    if(query.rowCount === 0){
-      return Promise.reject({status: 404, msg:"Comment Not Found"})
+    `,
+      [commentID]
+    );
+    if (query.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Comment Not Found" });
     }
-    return query
-  }
-  catch(err){
-    throw err
+    return query;
+  } catch (err) {
+    throw err;
   }
 }
 
-async function selectAllUsers(){
-  try{
+async function selectAllUsers() {
+  try {
     const query = await db.query(`
     SELECT * FROM users
-    `)
-    return query.rows
-  }
-  catch(err){
-    console.log(err)
-    throw err
+    `);
+    return query.rows;
+  } catch (err) {
+    console.log(err);
+    throw err;
   }
 }
 
@@ -133,5 +141,5 @@ module.exports = {
   insertCommentsByArticleID,
   updateVotesByArticleID,
   deleteCommentsByID,
-  selectAllUsers
+  selectAllUsers,
 };
