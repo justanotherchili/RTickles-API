@@ -33,7 +33,7 @@ async function getArticleByID(req, res, next) {
   try {
     const articleID = req.params.article_id;
     const article = await selectArticleByID(articleID);
-    res.status(200).send(article);
+    res.status(200).send({article});
   } catch (err) {
     next(err);
   }

@@ -21,7 +21,10 @@ async function selectEndpoints() {
 async function selectArticleByID(articleID) {
   try {
     const query = await db.query(
-      `SELECT * FROM articles WHERE article_id = $1`,
+      `SELECT articles.*,  
+        (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id)::integer AS comment_count 
+      FROM articles 
+      WHERE article_id = $1`,
       [articleID]
     );
     if (query.rowCount === 0) {

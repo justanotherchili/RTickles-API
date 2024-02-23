@@ -56,7 +56,8 @@ describe("GET /api/", () => {
 describe("GET /api/articles/:article_id", () => {
   test("get article by id", async () => {
     const res = await request(app).get("/api/articles/1").expect(200);
-    expect(res.body).toMatchObject({
+    const article = res.body.article
+    expect(article).toMatchObject({
       author: expect.any(String),
       title: expect.any(String),
       article_id: 1,
@@ -65,7 +66,9 @@ describe("GET /api/articles/:article_id", () => {
       created_at: expect.any(String),
       votes: expect.any(Number),
       article_img_url: expect.any(String),
+      comment_count: expect.any(Number)
     });
+
   });
   test("Returns 404 not found for a non existent id", async () => {
     const res = await request(app).get("/api/articles/99999").expect(404);
