@@ -1,9 +1,28 @@
+const { promises } = require("supertest/lib/test");
 const db = require("./db/connection");
 const endpoints = require("./endpoints.json");
 
 async function selectAllTopics() {
   try {
     const query = await db.query(`SELECT * FROM topics`);
+    return query.rows;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function selectTopicByName(topic) {
+  try {
+    const query = await db.query(
+      `
+    SELECT * FROM topics
+    WHERE slug = $1
+    `,
+      [topic]
+    );
+    if (query.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Topic Not Found" });
+    }
     return query.rows;
   } catch (err) {
     throw err;
@@ -49,9 +68,6 @@ async function selectAllArticles(topic) {
     }
     sqlString += ` ORDER BY created_at desc`;
     const query = await db.query(sqlString, queries);
-    if(query.rowCount === 0){
-      return Promise.reject({status: 404, msg: 'Topic Not Found'})
-    }
     return query.rows;
   } catch (err) {
     throw err;
@@ -145,4 +161,5 @@ module.exports = {
   updateVotesByArticleID,
   deleteCommentsByID,
   selectAllUsers,
+  selectTopicByName,
 };

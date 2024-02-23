@@ -9,12 +9,13 @@ const {
   updateVotesByArticleID,
   deleteCommentsByID,
   selectAllUsers,
+  selectTopicByName,
 } = require("./model");
 
 async function getAllTopics(req, res, next) {
   try {
     const topics = await selectAllTopics();
-    res.status(200).send(topics);
+    res.status(200).send({ topics });
   } catch (err) {
     next(err);
   }
@@ -23,7 +24,7 @@ async function getAllTopics(req, res, next) {
 async function getAllEndpoints(req, res, next) {
   try {
     const endPoints = await selectEndpoints();
-    res.status(200).send(endPoints);
+    res.status(200).send({ endPoints });
   } catch (err) {
     next(err);
   }
@@ -33,7 +34,7 @@ async function getArticleByID(req, res, next) {
   try {
     const articleID = req.params.article_id;
     const article = await selectArticleByID(articleID);
-    res.status(200).send({article});
+    res.status(200).send({ article });
   } catch (err) {
     next(err);
   }
@@ -41,9 +42,12 @@ async function getArticleByID(req, res, next) {
 
 async function getAllArticles(req, res, next) {
   try {
-    const topic = req.query.topic
+    const topic = req.query.topic;
+    if (topic) {
+      const validTopic = await selectTopicByName(topic);
+    }
     const articles = await selectAllArticles(topic);
-    res.status(200).send({articles});
+    res.status(200).send({ articles });
   } catch (err) {
     next(err);
   }
@@ -55,7 +59,7 @@ async function getCommentsByArticleID(req, res, next) {
     const article = await selectArticleByID(article_id);
     const comments = await selectCommentsByArticleID(article_id);
 
-    res.status(200).send(comments);
+    res.status(200).send({ comments });
   } catch (err) {
     next(err);
   }
@@ -98,16 +102,14 @@ async function removeCommentByID(req, res, next) {
   }
 }
 
-async function getAllUsers(req, res, next){
-  try{
-    const allUsers = await selectAllUsers()
-    res.status(200).send({users: allUsers})
-  }
-  catch(err){
-    next(err)
+async function getAllUsers(req, res, next) {
+  try {
+    const allUsers = await selectAllUsers();
+    res.status(200).send({ users: allUsers });
+  } catch (err) {
+    next(err);
   }
 }
-
 
 module.exports = {
   getAllTopics,
@@ -118,5 +120,5 @@ module.exports = {
   postCommentsByArticleID,
   patchVotesByArticleID,
   removeCommentByID,
-  getAllUsers
+  getAllUsers,
 };
