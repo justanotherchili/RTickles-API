@@ -16,7 +16,20 @@
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        {
+          "slug": "coding",
+          "description": "Code is love, code is life"
+        },
+        {
+          "slug": "football",
+          "description": "FOOTIE!"
+        },
+        {
+          "slug": "cooking",
+          "description": "Hey good looking, what you got cooking?"
+        }
+      ]
     }
   },
   "GET /api/articles": {
@@ -25,13 +38,24 @@
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
+          "author": "grumpy19",
+          "title": "The Notorious MSG's Unlikely Formula For Success",
+          "article_id": 34,
           "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
+          "created_at": "2020-11-22T11:13:00.000Z",
           "votes": 0,
-          "comment_count": 6
+          "article_img_url": "https://images.pexels.com/photos/2403392/pexels-photo-2403392.jpeg?w=700&h=700",
+          "comment_count": 11
+        },
+        {
+          "author": "tickle122",
+          "title": "The battle for Node.js security has only begun",
+          "article_id": 12,
+          "topic": "coding",
+          "created_at": "2020-11-15T13:25:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/10845119/pexels-photo-10845119.jpeg?w=700&h=700",
+          "comment_count": 7
         }
       ]
     }
@@ -40,37 +64,42 @@
     "description": "serves an object of the requested article",
     "queries": [],
     "exampleResponse": {
-      "article_id": 1,
-      "title": "Living in the shadow of a great man",
-      "topic": "mitch",
-      "author": "butter_bridge",
-      "body": "I find this existence challenging",
-      "created_at": "2020-07-09T20:11:00.000Z",
-      "votes": 100,
-      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "topic": "coding",
+        "author": "jessjelly",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "created_at": "2020-11-07T06:03:00.000Z",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+        "comment_count": 8
+      }
     }
   },
   "GET /api/articles/:article_id/comments": {
     "description": "an array of comments for the given article_id",
     "queries": [],
-    "exampleResponse": [
-      {
-        "comment_id": 1,
-        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        "article_id": 9,
-        "author": "butter_bridge",
-        "votes": 16,
-        "created_at": "2020-04-06T12:17:00.000Z"
-      },
-      {
-        "comment_id": 17,
-        "body": "The owls are not what they seem.",
-        " article_id": 9,
-        " author": "icellusedkars",
-        "votes": 20,
-        "created_at": "2020-03-14T17:02:00.000Z"
-      }
-    ]
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 89,
+          "body": "Esse et expedita harum non. Voluptatibus commodi voluptatem. Minima velit suscipit numquam ea. Id vitae debitis aut incidunt odio quo quam possimus ipsum.",
+          "article_id": 1,
+          "author": "cooljmessy",
+          "votes": 2,
+          "created_at": "2020-10-24T07:08:00.000Z"
+        },
+        {
+          "comment_id": 86,
+          "body": "Et explicabo dignissimos officia dolore rerum aliquam corrupti. Culpa corporis earum et earum officia a est atque at. Quidem quo recusandae delectus autem possimus blanditiis optio. Sed culpa culpa. Exercitationem nemo aspernatur alias ut qui.",
+          "article_id": 1,
+          "author": "tickle122",
+          "votes": 14,
+          "created_at": "2020-10-04T02:03:00.000Z"
+        }
+      ]
+    }
   },
   "POST /api/articles/:article_id/comments": {
     "description": "Inserts a new comment into comment table. Needs username and body",
@@ -99,28 +128,29 @@
   "GET /api/users": {
     "description": "Gets all users",
     "queries": [],
-    "exampleResponse": {"users":  [
-      {
-        "username": "butter_bridge",
-        "name": "jonny",
-        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-      },
-      {
-        "username": "icellusedkars",
-        "name": "sam",
-        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
-      },
-      {
-        "username": "rogersop",
-        "name": "paul",
-        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
-      },
-      {
-        "username": "lurker",
-        "name": "do_nothing",
-        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
-      }
-    ]}
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        },
+        {
+          "username": "icellusedkars",
+          "name": "sam",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+        },
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        },
+        {
+          "username": "lurker",
+          "name": "do_nothing",
+          "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+        }
+      ]
+    }
   }
-  
 }
