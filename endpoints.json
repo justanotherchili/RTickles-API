@@ -107,7 +107,7 @@
     "exampleResponse": { "comment": "help me" }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "Takes a body with an increment for votes and updates vote on article",
+    "description": "Takes an {inc_votes: 1} object and increments votes by the value of inc_votes",
     "queries": [],
     "exampleResponse": {
       "article_id": 1,
