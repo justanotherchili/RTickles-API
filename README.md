@@ -1,6 +1,6 @@
-# Forums API
+# Chili-news API
 
-Welcome to the NC Forums API! This backend service provides programmatic access to application data, akin to platforms like Reddit. Built with Node.js and PostgreSQL, it offers endpoints to interact with various resources such as topics, articles, comments, and users.
+Welcome to the Chili-News API! This backend service provides programmatic access to application data, akin to platforms like Reddit. Built with Node.js and PostgreSQL, it offers endpoints to interact with various resources such as topics, articles, comments, and users.
 
 View the API here: https://chili-news.onrender.com/api/
 
