@@ -9,9 +9,9 @@ View the API here: https://chili-news.onrender.com/api/
 To get started locally, follow these steps:
 
 1. Clone the repository:
-git clone https://github.com/justanotherchili/forums-api
+git clone https://github.com/justanotherchili/chili-news
 
-2. Navigate into the project directory:
+3. Navigate into the project directory:
 cd forums-api
 
 4. Install dependencies:
