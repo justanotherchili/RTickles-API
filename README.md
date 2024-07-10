@@ -9,7 +9,7 @@ View the API here: https://chili-news.onrender.com/api/
 To get started locally, follow these steps:
 
 1. Clone the repository:
-git clone https://github.com/justanotherchili/chili-news
+git clone https://github.com/justanotherchili/RTickles-API.git
 
 3. Navigate into the project directory:
 cd forums-api
