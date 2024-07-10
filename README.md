@@ -1,4 +1,4 @@
-# Chili-news API
+# RTickles API
 
 Welcome to the Chili-News API! This backend service provides programmatic access to application data, akin to platforms like Reddit. Built with Node.js and PostgreSQL, it offers endpoints to interact with various resources such as topics, articles, comments, and users.
 
